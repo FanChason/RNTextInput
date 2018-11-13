@@ -1,32 +1,48 @@
 import React, {Component} from 'react'
-import ReactNative,{View, Text, StyleSheet, TextInput, ScrollView, FlatList, Keyboard, KeyboardAvoidingView, Animated} from 'react-native'
+import ReactNative, {
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    ScrollView,
+    FlatList,
+    Keyboard,
+    KeyboardAvoidingView,
+    Animated
+} from 'react-native'
 
-let dataSources;
+var dataSources = [];
 
-export default class ChatInput extends Component{
+export default class ChatInput extends Component {
+
+    _keyExtractor = (item, index) => item.id;
 
     constructor(props) {
         super(props);
-
         dataSources = this.generateBig();
+        console.log(dataSources);
     }
 
-
     _renderItem = ({item}) => (
-        <View style={{justifyContent: 'center'}}>
-            <Text style={styles.renderItem}>{item}</Text>
+        <View style={{justifyContent: 'center'}} key={item.id}>
+            <Text key={item.id} style={styles.renderItem}>{item.data}</Text>
         </View>
     );
 
-    generateBig(){
+    generateBig() {
         var str = [];
-        for(var i=65;i<91;i++){
-            str.push(String.fromCharCode(i));
+        for (var i = 65; i < 91; i++) {
+            // str.push(String.fromCharCode(i));
+            var dict = {};
+            let value = String.fromCharCode(i);
+            dict.id = i.toString();
+            dict.data = value;
+            str.push(dict);
         }
         return str;
     }
 
-    componentWillMount () {
+    componentWillMount() {
         this.keyboardWillShowSub = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
         this.keyboardWillHideSub = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
     }
@@ -37,14 +53,14 @@ export default class ChatInput extends Component{
     }
 
     keyboardWillShow = (event) => {
-        this.refs.flatList.scrollToIndex({animated: true, index: this.generateBig().length-1, viewPosition: 0.5});
+        this.refs.flatList.scrollToIndex({animated: true, index: this.generateBig().length - 1, viewPosition: 0.5});
     };
 
     keyboardWillHide = (event) => {
-        this.refs.flatList.scrollToIndex({animated: true, index: this.generateBig().length-1, viewPosition: 1.9})
+        this.refs.flatList.scrollToIndex({animated: true, index: this.generateBig().length - 1, viewPosition: 1.9})
     }
 
-    render () {
+    render() {
         return (
             <KeyboardAvoidingView
                 style={styles.container}
@@ -55,6 +71,7 @@ export default class ChatInput extends Component{
                     data={dataSources}
                     renderItem={this._renderItem}
                     // ItemSeparatorComponent={ItemDivideComponent}
+                    keyExtractor={this._keyExtractor}
                 />
                 <TextInput
                     style={styles.inputView}
@@ -102,3 +119,5 @@ class ItemDivideComponent extends Component {
         );
     }
 }
+
+
